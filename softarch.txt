@@ -1,0 +1,84 @@
+Creational patterns
+ช่วยในการออกแบบเมื่อจะสร้าง object ต่างๆ ซึ่งในกลุ่มนี้จะประกอบไปด้วย patterns ต่างๆด้านล่างนี้
+
+Abstract Factory
+หลักการแบบสั้นๆ
+1.Abstract Factory จะกำหนด interface ที่ใช้ในการสร้าง product แต่ละประเภท และมี abstract method ที่ใช้ในการสร้าง product ต่างๆ
+2.Subclass เป็นคนกำหนดเองว่า product ที่จะสร้างแต่ละตัว จะถูกสร้างจาก class ตัวไหน ซึ่งจะต้องเป็น class ที่อยู่ในกลุ่มเดียวกัน
+3.เมื่อ client ต้องการ product ก็จะมาเรียก Subclass ให้ไปสร้าง product ต่างๆให้
+
+Factory Method
+หลักการแบบสั้นๆ
+1.Factory Method จะมี abstract method 1 ตัว เอาไว้สร้าง object
+2.เมื่อ client ต้องการใช้ object ก็จะมาเรียก abstract method ตัวนั้น เพื่อเอา object ไปใช้
+3.Subclass เป็นคนกำหนดเองว่าจะสร้าง object จาก class ตัวไหน
+
+Builder
+หลักการแบบสั้นๆ
+1.แยกขั้นตอนการสร้าง object ออกไปให้ Builder รับผิดชอบ (อาจจะมี builder เพื่อใช้สร้าง object หลายๆแบบก็ได้)
+2.แยกลำดับขั้นตอนการประกอบ object ออกไปให้ Director รับผิดชอบ (ภายใน director จะมีวิธีการประกอบ object หลายๆแบบก็ได้)
+3.Client เมื่อต้องการสร้าง object ก็จะส่ง Builder ไปให้ Director เพื่อให้สร้างของที่ตัวเองต้องการออกมา
+
+Singleton
+หลักการแบบสั้นๆ
+1.แก้ไข constructor ของ class ที่ต้องการจะทำให้ไม่มีคนอื่นเข้าถึงได้ (ทำให้ new object ไม่ได้)
+2.สร้าง global access ที่เข้าถึง object นั้นเพื่อให้คนอื่นเรียกใช้
+3.สร้าง object ของคลาสนั้นแล้วเก็บไว้ (เมื่อถูกเรียกใช้)
+
+Prototype
+หลักการแบบสั้นๆ
+1.สร้าง interface ที่ใช้สำหรับก๊อปปี้/โคลน ออกมา 1 ตัว
+2.Class ไหนที่ต้องการให้มีความสามารถในการสร้างก๊อปปี้ object ก็ไปทำการ implement interface ที่ว่านั้นซะ
+3.การตั้งค่าเพิ่มเติมต่างๆสามารถไปใส่ไว้ใน subclass ได้
+
+Dependency Injection
+
+Structural patterns
+ช่วยในการออกแบบโครงสร้างของ class ต่างๆ ซึ่งในกลุ่มนี้จะประกอบไปด้วย patterns ต่างๆด้านล่างนี้
+
+Facade
+หลักการแบบสั้นๆ
+สร้าง class ที่ทำงานกับ subsystem ที่วุ่นวายๆ แล้วจัดการเรื่องที่ client ต้องเรียกใช้ทั้งหมด
+สร้างช่องทางให้ client เรียกใช้งานแบบง่ายๆ
+
+Proxy
+หลักการแบบสั้นๆ
+สร้าง interface สำหรับ service
+สร้าง concrete service
+สร้าง proxy ที่ implement interface นั้น ส่วนการทำงานจะส่งต่อให้กับ concrete service ทำงานต่อ
+เมื่อ client ต้องการใช้ service ให้ส่ง proxy object ไปให้ใช้งานแทน
+
+Decorator
+มีตัวถูก Wrapee
+
+Behavioral patterns
+ช่วยในการออกแบบให้ class ต่างๆทำงานร่วมกัน ซึ่งในกลุ่มนี้จะประกอบไปด้วย patterns ต่างๆด้านล่างนี้
+Strategy
+หลักการแบบสั้นๆ
+แยกงานเฉพาะเรื่องที่แตกต่างกันออกเป็นหลายๆ class
+สร้าง interface กลางของงานที่แยกออกมา
+ตัวทำงานให้ reference interface นั้น
+ให้ client เป็นคนกำหนดว่าจะสร้าง object เพื่อเอาไว้ทำงานจาก class ไหน
+
+Observer
+หลักการแบบสั้นๆ
+สร้างตัวกลางในการลงทะเบียนให้กับคนที่ต้องการ ติดตามข่าว/ยกเลิกติดตามข่าว ขึ้นมา
+สร้าง interface กลางสำหรับคนติดตามข่าว เพื่อให้ตัวกลางทำงานร่วมได้
+คนที่ต้องการติดตามข่าวจะต้อง implement interface นั้น
+เมื่อมีข่าวใหม่ๆเกิดขึ้น ตัวกลางก็จะส่งข่าวไปให้กลับคนที่ลงทะเบียนไว้
+
+Command
+หลักการแบบสั้นๆ
+ตัวนี้ยาวมากรบกวนไปอ่านเองละกัน ใครสรุปสั้นๆได้บอกผมด้วย (Fork ออกไปแล้ว pull request เข้ามาก็ได้)
+
+Template Method
+หลักการแบบสั้นๆ
+แตก algorithm ออกเป็นขั้นๆ แล้วทำให้เป็น method (บางตัวอาจะเป็น abstract)
+เขียนลำดับการเรียก method พวกนั้นไว้ภายใน template method
+สร้าง subclass เพื่อมาจัดการขั้นตอนเฉพาะทางของเรื่องนั้นๆ
+
+Iterator
+หลักการแบบสั้นๆ
+แยกงานที่ใช้ในการท่องไปใน collection ออกมาให้ class อื่นทำงาน (เราเรียก class ใหม่นี้ว่า Iterator)
+ให้ collection class สามารถสร้าง Iterator object ได้
+ใครที่ต้องการเข้าถึงข้อมูลของ collection ให้ใช้งานผ่าน iterator object ที่ collection class สร้างให้แทน
