@@ -1,0 +1,320 @@
+/*ทำ instance single node +ตั้งค่า-->image*/
+ubuntu 18.04 x86
+t2.medium 4gb up
+create key pair ใช้ RSA .pem
+161.246.0.0/16
+1x 20 GiB gp2
+
+edit inbound rules
+cutom tcp 50000-50099 MyIP,161.246.0.0/16
+cutom tcp 8088 MyIP,161.246.0.0/16
+
+ls
+ls -la
+sudo apt upgrade
+sudo apt update
+
+Install SSH:
+$sudo apt-get install openssh-server
+Y
+Create Private Key with empty passphrase:
+$ssh-keygen
+
+
+Append and test new key:
+$cat ~/.ssh/id_rsa.pub >> ~/.ssh/authorized_keys
+$ssh localhost
+
+Logout:
+$exit
+
+Install Java:
+$sudo apt-get install openjdk-8-jdk
+Check Java version:
+$java -version
+//------------------------------------------------------------------//
+Download Hadoop package:
+$wget https:2.6.0/hadoop-//a2.6.0.tar.gzrchive.apache.org/dist/hadoop/core/hadoop-2.6.0/hadoop-2.6.0.tar.gz
+
+Extract Hadoop package:
+$tar –xvf hadoop-2.6.0.tar.gz
+
+Move extracted Hadoop directory:
+$sudo mv ./hadoop-2.6.0 /usr/local/hadoop
+//------------------------------------------------------------------//
+		 |
+ 		 |
+ 		 |
+		V
+wget https://archive.apache.org/dist/hadoop/core/hadoop-2.6.0/hadoop-2.6.0.tar.gz && tar -xvf hadoop-2.6.0.tar.gz && sudo mv ./hadoop-2.6.0 /usr/local/hadoop
+
+
+Add path to environment variables:
+$nano ~/.bashrc
+
+Add these lines at the bottom:
+export JAVA_HOME=/usr/lib/jvm/java-8-openjdk-amd64
+export PATH=$PATH:$JAVA_HOME/bin
+export HADOOP_HOME=/usr/local/hadoop
+export PATH=$PATH:$HADOOP_HOME/bin
+export PATH=$PATH:$HADOOP_HOME/sbin
+
+Save file:
+Ctrl+x, press y, and press enter
+
+Execute environment variables:
+$source ~/.bashrc
+
+Create Hadoop log directory:
+$cd /usr/local
+$sudo mkdir /var/log/hadoop
+$sudo chown –R ubuntu:ubuntu /var/log/hadoop
+
+Edit Hadoop shell script:
+$cd /usr/local/hadoop/etc/hadoop
+$nano hadoop-env.sh
+
+Edit Hadoop shell script:
+ล่าง export JAVA_HOME=${JAVA_HOME} (comment export JAVA_HOME=${JAVA_HOME} ด้วย)
+ใส่ JAVA_HOME=/usr/lib/jvm/java-8-openjdk-amd64
+ล่าง #export HADOOP_LOG_DIR=${HADOOP_LOG_DIR}/$USER
+ใส่ export HADOOP_LOG_DIR=/var/log/hadoop
+
+Edit YARN shell script:
+$nano yarn-env.sh
+ล่าง unset IFS
+export YARN_LOG_DIR=/var/log/hadoop
+
+
+Edit hadoop-core-site.xml:
+$nano core-site.xml
+<property>
+<name>fs.defaultFS</name>
+<value>hdfs:// ใส่ Private IPv4 addresses :9000</value>
+</property>
+
+Create directories for Namenode and Datanode:
+$sudo mkdir -p /var/hadoop_data/namenode
+$sudo mkdir -p /var/hadoop_data/datanode
+$sudo chown ubuntu:ubuntu -R /var/hadoop_data
+//------------------------------------------------------------------//
+Edit hdfs-site.xml:
+$nano hdfs-site.xml
+<configuration>
+<property>
+<name>dfs.replication</name>
+<value>1</value>
+</property>
+<property>
+<name>dfs.namenode.name.dir</name>
+<value>file:/var/hadoop_data/namenode</value>
+</property>
+<property>
+<name>dfs.datanode.data.dir</name>
+<value>file:/var/hadoop_data/datanode</value>
+</property>
+</configuration>
+//------------------------------------------------------------------//
+//------------------------------------------------------------------//
+Edit yarn-site.xml:
+$nano yarn-site.xml
+<configuration>
+<property>
+<name>yarn.resourcemanager.hostname</name>
+<value>172.31.16.229</value>
+</property>
+<property>
+<name>yarn.resourcemanager.scheduler.address</name>
+<value>172.31.16.229:8030</value>
+</property>
+<property>
+<name>yarn.resourcemanager.resource-tracker.address</name>
+<value>172.31.16.229:8031</value>
+</property>
+<property>
+<name>yarn.resourcemanager.address</name>
+<value>172.31.16.229:8032</value>
+</property>
+<property>
+<name>yarn.resourcemanager.admin.address</name>
+<value>172.31.16.229:8033</value>
+</property>
+<property>
+<name>yarn.resourcemanager.webapp.address</name>
+<value>172.31.16.229:8088</value>
+</property>
+<property>
+<name>yarn.nodemanager.aux-services</name>
+<value>mapreduce_shuffle</value>
+</property>
+<property>
+<name>yarn.nodemanager.aux-services.mapreduce.shuffle.class</name>
+<value>org.apache.hadoop.mapred.ShuffleHandler</value>
+</property>
+</configuration>
+เปลี่ยนเป็นเลข Private IPv4 addresses ของเรา
+
+Edit mapred-site.xml:
+$cp mapred-site.xml.template mapred-site.xml
+$nano mapred-site.xml
+
+<configuration>
+<property>
+<name>mapreduce.framework.name</name>
+<value>yarn</value>
+</property>
+</configuration>
+//------------------------------------------------------------------//
+Formatting Namenode:
+$hdfs namenode -format
+
+Reformatting Namenode to verify:
+$hdfs namenode -format
+
+Start Namenode and Datanode:
+$start-dfs.sh
+
+Verify Namenode and Datanode:
+$jps
+
+Start YARN:
+$start-yarn.sh
+
+http://Public IPv4 address :50070
+//------------------------------------------------------------------//
+Get and rename file :
+$cd
+$wget https://www.gutenberg.org/files/1342/1342-0.txt
+$mv 1342-0.txt input_data.txt
+
+Importing data to HDFS:
+$hdfs dfs -mkdir /inputs
+$hdfs dfs -mkdir /outputs
+$hdfs dfs -copyFromLocal ./input_data.txt /inputs/input_data.txt
+
+Verify data in HDFS:
+$hdfs dfs -ls /inputs
+$hdfs dfs -cat /inputs/input_data.txt
+
+Remove data from HDFS:
+$hdfs dfs -rm /inputs/input_data.txt
+-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+/*AWS*/
+Images-->AMIs--->เลือก 1 อัน ----> Launch instance from AMIs--->Number of instances = ?
+Name and tags ตั้งชื่อ ?-Slave ----> Launch Instance
+
+/* vs code ctrl+shift+p ---> Remote-SSH: Open SSH Configuration File...*/
+Host BDA-Hadoop-Master
+    HostName ec2-54-91-251-209.compute-1.amazonaws.com (public IPv4 DNS)
+    User ubuntu
+    IdentityFile "C:\Users\Mr.Supakorn Thongbor\Downloads\BDA001_Key.pem"
+
+Host BDA-Hadoop-Slave-1
+    HostName ec2-3-89-30-23.compute-1.amazonaws.com 
+    User ubuntu
+    IdentityFile "C:\Users\Mr.Supakorn Thongbor\Downloads\BDA001_Key.pem"
+
+Host BDA-Hadoop-Slave-2
+    HostName ec2-50-19-138-211.compute-1.amazonaws.com
+    User ubuntu
+    IdentityFile "C:\Users\Mr.Supakorn Thongbor\Downloads\BDA001_Key.pem"
+
+/* vs code ctrl+shift+p ---> Remote-SSH:Connect to Host...*/
+ /*Terminal*/
+$ sudo nano /etc/hosts
+
+จากนั้นเอา private ip มาใส่ master slave1 slave2
+172.31.16.229 ip-172-31-16-229
+172.31.35.153 ip-172-31-35-153
+172.31.47.238 ip-172-31-47-238
+
+At master node : Copy key file to Slave 1 & Slave 2
+$scp /home/ubuntu/.ssh/id_rsa.pub ip-172-31-35-153:/home/ubuntu/.ssh/master.pub
+$scp /home/ubuntu/.ssh/id_rsa.pub ip-172-31-47-238:/home/ubuntu/.ssh/master.pub
+มีอะไรตอบ yes ทำให้ master คุยกับ slave ได้
+
+At Slave1 & Slave2 : Append new key to key file
+$cat /home/ubuntu/.ssh/master.pub >> /home/ubuntu/.ssh/authorized_keys
+
+At Master : Test ssh to Slave1 & Slave2 (test ลองเป็น slave)
+$ssh ip-172-31-35-153
+$exit
+$ssh ip-172-31-47-238
+$exit
+
+At Master : Add Slave1 & Slave2 to Hadoop slave file
+$nano /usr/local/hadoop/etc/hadoop/slaves
+ip-172-31-35-153
+ip-172-31-47-238
+
+At Master : Edit hdfs-site.xml
+$nano /usr/local/hadoop/etc/hadoop/hdfs-site.xml
+Edit replication 1 to 2
+
+At all nodes : Remove directories of namenode and datanode
+$rm -rf /var/hadoop_data/namenode/* && rm -rf /var/hadoop_data/datanode/*
+$rm -rf /var/hadoop_data/datanode/*
+
+ถ้ามีปัญหา
+$rm -rf ~/.vscode
+
+At Master: Format namenode
+$hdfs namenode -format
+
+At Master: Execute start-dfs.sh
+$start-dfs.sh
+
+At all nodes: Use jps to check result, should see NameNode
+started on Master and DataNode started on both Slave1&Slave2
+
+At Master: Execute start-yarn.sh
+$start-yarn.sh
+At all nodes: Use jps to check result, should see NameManager
+started on both Slave1&Slave2
+
+ใช้ Public IPv4 address ของ master
+http://52.26.15.54:50070
+
+$hdfs dfs -mkdir /inputs && hdfs dfs -mkdir /outputs
+$hdfs dfs -mkdir /outputs
+
+Import data to Hadoop cluster
+At Slave1: Import data to Hadoop cluster
+$hdfs dfs -copyFromLocal ./input_data.txt /inputs/input_data.txt
+$hdfs dfs -ls /inputs
+
+At Master & Slave2: Check imported file
+$hdfs dfs -ls /inputs
+
+At Slave1 & Slave2: Use jps to see Application Master and Yarn Child Container
+-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+/*Map reduce*/
+ลากไฟล์เข้า vscode .java
+Create a Java file
+$nano WordCount.java
+
+เพิ่ม inbound rules
+All trafic custom 172.0.0.0/8
+
+$mkdir wordcount_classes
+
+$javac -classpath /usr/local/hadoop/share/hadoop/common/hadoop-common-2.6.0.jar:/usr/local/hadoop/share/hadoop/mapreduce/hadoop-mapreduce-client-core-2.6.0.jar:/usr/local/hadoop/share/hadoop/common/lib/commons-cli-1.2.jar -d wordcount_classes WordCount.java
+
+Create a Jar file
+$jar -cvf ./wordcount.jar -C wordcount_classes/ .
+
+Add a MapReduce Job to YARN
+$yarn jar ./wordcount.jar WordCount /inputs/* /outputs/wordcount_output_dir01
+
+View the result using command line
+$hdfs dfs -cat /outputs/wordcount_output_dir01/part-r-00000
+
+ใช้ Public IPv4 address ของ master
+http://Public IPv4 address:50070
+-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+Stop Yarn & Stop DFS
+$ stop-yarn.sh
+$ stop-dfs.sh
+       &&
+$ stop-all.sh
+

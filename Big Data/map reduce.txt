@@ -1,0 +1,58 @@
+ตามคลิปจารย์
+connect แล้ว open home directory 
+mkdir weather-data
+
+copy java to weather-data floder
+NCDC floder ลากมาเลย
+
+cd weather-data/
+ls
+mkdir wt-classes
+
+$javac -classpath /usr/local/hadoop/share/hadoop/common/hadoop-common-2.6.0.jar:/usr/local/hadoop/share/hadoop/mapreduce/hadoop-mapreduce-client-core-2.6.0.jar:/usr/local/hadoop/share/hadoop/common/lib/commons-cli-1.2.jar -d wt_classes ./*.java
+ls ./weather-data/
+
+history >> command.text
+cat command.text copy ประวัติ command ไว้
+
+$jar -cvf ./highest.jar -C wt-classes/ .
+ls
+
+start-dfs.sh
+start-yarn.sh
+
+hdfs dfs -ls /outputs/
+
+hdfs dfs -rm -r /outputs/
+
+hdfs dfs -ls /
+
+hdfs dfs -rm -r /inputs
+hdfs dfs -mkdir /inputs
+hdfs dfs -mkdir /outputs
+hdfs dfs -copyFromLocal ./NCDC /inputs/
+hdfs dfs -ls /inputs
+hdfs dfs -ls /inputs/NCDC
+hdfs dfs -cat /inputs/NCDC/1901
+
+private dns--->public ip for who want download
+
+yarn jar ./highest.jar HighestDriver /inputs/NCDC/1901 /outputs/highestTemp-dir01
+hdfs dfs -ls /outputs/highestTemp-dir01
+
+yarn jar ./test.jar WordCount /inputs/63010921_input.txt /outputs/test-dir99
+hdfs dfs -cat /outputs/test-dir99/part-00000
+
+
+
+hdfs dfs -cat /outputs/highestTemp-dir01/part-00000
+
+yarn jar ./highest.jar HighestDriver /inputs/NCDC/* /outputs/highestTemp-dir02
+hdfs dfs -ls /outputs/highestTemp-dir02
+hdfs dfs -cat /outputs/highestTemp-dir02/part-00000
+
+stop-all.sh
+jps
+exit
+
+
